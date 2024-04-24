@@ -46,4 +46,6 @@ Setup K3s
 git clone https://github.com/k3s-io/k3s-ansible
 ansible-galaxy collection install k3s-ansible/
 ansible-playbook -i inventory -e@vars.yml k3s-ansible/playbook/site.yml -e token=mytoken
+
+ansible-playbook -i inventory -e@vars.yml playbooks/k3s-tools.yml
 ```

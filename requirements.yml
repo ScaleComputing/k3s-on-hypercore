@@ -3,6 +3,8 @@ collections:
     version: 8.6.0
   - name: scale_computing.hypercore
     version: 1.4.0 # 1.5.0 - url2template role is needed
+  - name: kubernetes.core
+    version: 3.0.1
 roles:
   - name: geerlingguy.nfs
     version: 2.0.0

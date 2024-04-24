@@ -1,0 +1,50 @@
+---
+# Prevents "undefined hostvars" error
+- name: Dummy play
+  hosts: k3s_cluster
+  gather_facts: false
+  tasks: []
+
+- name: Install K8s tools
+  hosts: "{{ hostvars[groups['server'][0]]['inventory_hostname'] }}"
+  gather_facts: false
+  tasks:
+
+    - name: Is helm command present
+      ansible.builtin.command:
+        cmd: helm version
+      ignore_errors: true
+      register: helm_version_result
+
+    - name: Install helm if needed
+      when: helm_version_result is failed
+      block:
+        - name: Get helm installer script
+          ansible.builtin.get_url:
+            url: https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+            dest: /tmp/get-helm-3
+            force: true
+
+        - name: Run helm installer script
+          ansible.builtin.command:
+            cmd: bash /tmp/get-helm-3   # --version v3.14.4
+          environment:
+            HELM_INSTALL_DIR: /usr/bin
+          become: true
+
+        - name: Helm completion for bash
+          ansible.builtin.lineinfile:
+            path: "~{{ ansible_user }}/.bashrc"
+            regexp: '\.\s+<\(helm completion bash\)'
+            line: ". <(helm completion bash)  # Added by k3s-on-hypercore"
+            create: false
+
+        - name: Install helm diff plugin
+          kubernetes.core.helm_plugin:
+            plugin_path: https://github.com/databus23/helm-diff
+            # plugin_version: 3.9.5
+            state: present
+          become: "{{ item }}"
+          loop:
+            - true
+            - false
