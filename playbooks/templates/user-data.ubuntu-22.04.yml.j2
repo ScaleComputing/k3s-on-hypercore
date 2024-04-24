@@ -16,6 +16,8 @@ Content-Disposition: attachment; filename="cloud-config.txt"
 # chpasswd: { expire: False }
 # ssh_pwauth: True
 
+hostname: {{ vm_name | replace("_", "-") }}
+# fqdn: {{ vm_name | replace("_", "-") }}.example.com
 manage_etc_hosts: localhost
 ssh_authorized_keys: {{ vm_ssh_authorized_keys }}
 disable_root: false

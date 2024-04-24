@@ -21,10 +21,29 @@ TEMP
 ## ansible-galaxy collection install ../ansible_collections/scale_computing/hypercore/scale_computing-hypercore-1.5.0-dev.tar.gz
 ```
 
+Decide on prefix to your VM names
+```
+# set vm_group variable
+nano vars.yml
+
+# adjust to be aligned with vm_group variable
+nano inventory/k3s.yml
+```
+
 Create VMs on HyperCore
 
 ```
 ansible-playbook -e@vars.yml playbooks/hypercore_template_vm.yml
 ansible-playbook -i inventory -e@vars.yml playbooks/nfs-server.yml
 ansible-playbook -i inventory -e@vars.yml playbooks/k3s-cluster.yml
+```
+
+Setup K3s
+
+```
+# ansible-playbook -i inventory -e@vars.yml k3s.orchestration.site
+
+git clone https://github.com/k3s-io/k3s-ansible
+ansible-galaxy collection install k3s-ansible/
+ansible-playbook -i inventory -e@vars.yml k3s-ansible/playbook/site.yml -e token=mytoken
 ```
