@@ -52,7 +52,7 @@ metadata:
     "coredns.io/hostname": "nfs.demo1"
 spec:
   ports:
-  - port: 80
+  - port: 8080  # the 80 is already used ky K3s
     protocol: TCP
     targetPort: 8080
   selector:

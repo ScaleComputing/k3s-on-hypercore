@@ -49,4 +49,34 @@ ansible-playbook -i inventory -e@vars.yml k3s-ansible/playbook/site.yml -e token
 
 ansible-playbook -i inventory -e@vars.yml playbooks/k3s-tools.yml
 ansible-playbook -i inventory -e@vars.yml playbooks/k3s-nfs.yml
+ansible-playbook -i inventory -e@vars.yml playbooks/k3s-dns.yml
+```
+
+Use K3s
+
+```
+# k == kubectl
+k apply -f kube/webapp.yml
+# ask exdns-k8s-gateway for IP of the just-deployed webapp demo
+get svc -A -l app.kubernetes.io/instance=exdns  # 172.31.6.51 was returned
+dig nfs.demo1.xyz.si @172.31.6.51
+```
+
+```
+# to setup "split DNS" on local PC
+sudo nano /etc/systemd/resolved.conf
+  [Resolve]
+  DNS=172.31.6.51
+  Domains=~xyz.si
+
+sudo systemctl daemon-reload
+sudo systemctl restart systemd-resolved
+dig nfs.demo1.xyz.si
+```
+
+Open http://nfs.demo1.xyz.si:8080/ URL.
+
+```
+# Add a test file directly on NFS server
+root@b-k3s-nfs-server:~# date >> /nfsdata/nfs-retain/default-nfs-web-pvc/aa.txt
 ```
