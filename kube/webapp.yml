@@ -1,0 +1,60 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nfs-web-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 80Mi
+  storageClassName: nfs-retain
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-nfs
+spec:
+  selector:
+    matchLabels:
+      run: web-nfs
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: web-nfs
+    spec:
+      containers:
+      - name: web
+        image: registry.k8s.io/test-webserver
+        args: ["--port", "8080"]
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - mountPath: /nfs
+          name: nfs-volume
+      volumes:
+      - name: nfs-volume
+        persistentVolumeClaim:
+          claimName: nfs-web-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-nfs-svc
+  labels:
+    run: web-nfs
+  annotations:
+    "coredns.io/hostname": "nfs.demo1"
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    run: web-nfs
+  type: LoadBalancer
