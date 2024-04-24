@@ -48,4 +48,5 @@ ansible-galaxy collection install k3s-ansible/
 ansible-playbook -i inventory -e@vars.yml k3s-ansible/playbook/site.yml -e token=mytoken
 
 ansible-playbook -i inventory -e@vars.yml playbooks/k3s-tools.yml
+ansible-playbook -i inventory -e@vars.yml playbooks/k3s-nfs.yml
 ```

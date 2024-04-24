@@ -1,0 +1,57 @@
+---
+- name: Install NFS utils
+  hosts: k3s_cluster
+  gather_facts: false
+  tasks:
+    - name: Add NFS client utils - mount.nfs
+      ansible.builtin.package:
+        name: nfs-common
+        state: present
+
+- name: Install nfs-subdir-external-provisioner
+  hosts: "{{ hostvars[groups['server'][0]]['inventory_hostname'] }}"
+  gather_facts: false
+  tasks:
+    - name: Add nfs-subdir-external-provisioner chart repo
+      kubernetes.core.helm_repository:
+        name: nfs-subdir-external-provisioner
+        repo_url: https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
+
+    - name: Install nfs-subdir-external-provisioner helm chart - default
+      kubernetes.core.helm:
+        name: nfs-provisioner-1
+        chart_ref: nfs-subdir-external-provisioner/nfs-subdir-external-provisioner
+        chart_version: 4.0.18
+        release_namespace: kube-system
+        set_values:
+          - value: nfs.server={{ nfs_ip_address }}
+            value_type: string
+          - value: nfs.path={{ nfs_data_dir }}/nfs-client
+            value_type: string
+          # - value: storageClass.name=nfs-client
+          #   value_type: string
+          - value: storageClass.provisionerName=k8s-sigs.io/nfs-subdir-external-provisioner
+            value_type: string
+        # kubeconfig: $K8S_AUTH_KUBECONFIG
+
+    - name: Install nfs-subdir-external-provisioner helm chart - persistent
+      kubernetes.core.helm:
+        name: nfs-provisioner-2
+        chart_ref: nfs-subdir-external-provisioner/nfs-subdir-external-provisioner
+        chart_version: 4.0.18
+        release_namespace: kube-system
+        set_values:
+          - value: nfs.server={{ nfs_ip_address }}
+            value_type: string
+          - value: nfs.path={{ nfs_data_dir }}/nfs-retain
+            value_type: string
+          - value: nfs.reclaimPolicy=Retain
+            value_type: string
+          - value: storageClass.name=nfs-retain
+            value_type: string
+          - value: storageClass.provisionerName=k8s-sigs.io/nfs-subdir-external-provisioner-retain
+            value_type: string
+          - value: storageClass.pathPattern='/${.PVC.namespace}-${.PVC.name}'
+            value_type: string
+          - value: storageClass.allowVolumeExpansion=True
+            value_type: string
