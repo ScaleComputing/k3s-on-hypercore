@@ -81,6 +81,16 @@ ansible-playbook -i inventory -e@vars.yml k3s-ansible/playbook/site.yml -e token
 k get no
 ```
 
+### Upgrade K3s
+
+Read release notes (https://docs.k3s.io/release-notes/v1.29.X).
+
+In `vars.yml` change `k3s_version` to more recent version, then run:
+
+```
+ansible-playbook -i inventory -e@vars.yml k3s-ansible/playbook/upgrade.yml -e token=mytoken
+```
+
 ## Use K3s
 
 ```
