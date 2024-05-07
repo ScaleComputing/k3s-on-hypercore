@@ -53,6 +53,16 @@ ansible-playbook -i inventory -e@vars.yml playbooks/k3s-dns.yml
 ansible-playbook -i inventory -e@vars.yml playbooks/k3s-metallb.yml
 ```
 
+Use this K3S cluster
+
+```
+ls $HOME/.kube
+cp $HOME/.kube/config.new $HOME/.kube/config_k3s_scale
+export KUBECONFIG=$HOME/.kube/config_k3s_scale
+kubectl config use-context k3s-ansible
+kubectl config get-contexts
+```
+
 Use K3s
 
 ```
