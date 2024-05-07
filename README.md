@@ -91,3 +91,19 @@ Open http://nfs.demo1.xyz.si:8080/ URL.
 # Add a test file directly on NFS server
 root@b-k3s-nfs-server:~# date >> /nfsdata/nfs-retain/default-nfs-web-pvc/aa.txt
 ```
+
+Try a more complex app, say https://github.com/GoogleCloudPlatform/microservices-demo
+
+```
+cd kube
+git clone https://github.com/GoogleCloudPlatform/microservices-demo
+cd microservices-demo
+
+k create ns demo2
+kubectl config set-context --current --namespace=demo2
+kubectl apply -f ./release/kubernetes-manifests.yaml
+kubectl get po
+kubectl get service frontend-external
+```
+
+Visit http://EXTERNAL_IP of service frontend-external.
