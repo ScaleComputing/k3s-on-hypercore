@@ -23,6 +23,9 @@ agent_ip_addresses:
   - 172.31.6.40
   - 172.31.6.41
   - 172.31.6.42
+load_balancer_addresses:
+  - 172.31.6.50-172.31.6.58
+  - 172.31.6.59/32
 
 # ubuntu22.04 BIOS - ens3
 # ubuntu22.04 UEFI - enp1s0
@@ -40,5 +43,5 @@ nfs_data_dir: /nfsdata
 # ansible_user: debian
 k3s_version: v1.29.3+k3s1
 api_endpoint: "{{ hostvars[groups['server'][0]]['ansible_host'] | default(groups['server'][0]) }}"
-extra_server_args: ""
+extra_server_args: "--disable=servicelb"
 extra_agent_args: ""

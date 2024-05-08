@@ -14,6 +14,7 @@
       ansible.builtin.command:
         cmd: helm version
       ignore_errors: true
+      changed_when: false
       register: helm_version_result
 
     - name: Install helm if needed
@@ -48,3 +49,17 @@
           loop:
             - true
             - false
+
+    # playbook uses kubernetes.core.k8s collection on target server-0, and
+    # this needs some python dependencies
+    - name: Install python pip
+      ansible.builtin.package:
+        name: pip
+        state: present
+
+    - name: Install python dependencies
+      ansible.builtin.pip:
+        # requirements: files/requirements-target.txt
+        name:
+          - kubernetes  # 29.0.0
+        state: present

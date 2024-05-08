@@ -50,6 +50,7 @@ ansible-playbook -i inventory -e@vars.yml k3s-ansible/playbook/site.yml -e token
 ansible-playbook -i inventory -e@vars.yml playbooks/k3s-tools.yml
 ansible-playbook -i inventory -e@vars.yml playbooks/k3s-nfs.yml
 ansible-playbook -i inventory -e@vars.yml playbooks/k3s-dns.yml
+ansible-playbook -i inventory -e@vars.yml playbooks/k3s-metallb.yml
 ```
 
 Use K3s
