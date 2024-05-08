@@ -1,0 +1,75 @@
+---
+- name: Create K3s cluster VMs
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Create K3s server VM
+      ansible.builtin.include_role:
+        name: scale_computing.hypercore.template2vm
+      vars:
+        template2vm_source_vm_name: "{{ source_vm_name }}"
+        template2vm_vm_name: "{{ vm_group }}-server-{{ vm_idx }}"
+        template2vm_description: K3s server, created from {{ source_vm_name }}
+        template2vm_vm_tags:
+          - "{{ vm_group }}"
+          - ansible_group__{{ vm_group }}
+          - ansible_group__{{ vm_group }}_servers
+          - ansible_host__{{ vm_network_ip_address }}
+          # - SERIAL
+        template2vm_vcpu: "{{ vcpu }}"
+        template2vm_memory: "{{ memory }}"
+        template2vm_disk_size: "{{ disk_size }}"
+        template2vm_power_state: start
+        # cloud-init
+        template2vm_user_data: "{{ lookup('template', 'user-data.ubuntu-22.04.yml.j2') }}"
+        template2vm_meta_data: "{{ lookup('template', 'meta-data.ubuntu-22.04.yml.j2') }}"
+        vm_name: "{{ template2vm_vm_name }}"
+        vm_network_iface: enp1s0
+        vm_network_mode: static
+        vm_network_ip_address: "{{ vm_ip_address }}"
+      loop: "{{ server_ip_addresses }}"
+      loop_control:
+        index_var: vm_idx
+        loop_var: vm_ip_address
+
+    - name: Create K3s agent VM
+      ansible.builtin.include_role:
+        name: scale_computing.hypercore.template2vm
+      vars:
+        template2vm_source_vm_name: "{{ source_vm_name }}"
+        template2vm_vm_name: "{{ vm_group }}-agent-{{ vm_idx }}"
+        template2vm_description: K3s agent, created from {{ source_vm_name }}
+        template2vm_vm_tags:
+          - "{{ vm_group }}"
+          - ansible_group__{{ vm_group }}
+          - ansible_group__{{ vm_group }}_agents
+          - ansible_host__{{ vm_network_ip_address }}
+          # - SERIAL
+        template2vm_vcpu: "{{ vcpu }}"
+        template2vm_memory: "{{ memory }}"
+        template2vm_disk_size: "{{ disk_size }}"
+        template2vm_power_state: start
+        # cloud-init
+        template2vm_user_data: "{{ lookup('template', 'user-data.ubuntu-22.04.yml.j2') }}"
+        template2vm_meta_data: "{{ lookup('template', 'meta-data.ubuntu-22.04.yml.j2') }}"
+        vm_name: "{{ template2vm_vm_name }}"
+        vm_network_ip_address: "{{ vm_ip_address }}"
+      loop: "{{ agent_ip_addresses }}"
+      loop_control:
+        index_var: vm_idx
+        loop_var: vm_ip_address
+
+    - name: Refresh inventory
+      ansible.builtin.meta: refresh_inventory
+
+- name: Wait on VM to boot
+  hosts: "{{ vm_group }}_servers, {{ vm_group }}_agents"
+  gather_facts: false
+  tasks:
+    - name: Refresh inventory and wait
+      ansible.builtin.include_role:
+        name: scale_computing.hypercore.template2vm
+        tasks_from: wait_vm_boot_tasks.yml
+      loop: "{{ range(10) }}"

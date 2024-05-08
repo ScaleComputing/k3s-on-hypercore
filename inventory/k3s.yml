@@ -1,0 +1,10 @@
+---
+# assign HyperCore VMs to inventory groups used by https://github.com/k3s-io/k3s-ansible
+k3s_cluster:
+  children:
+    server:
+      children:
+        b_k3s_servers:
+    agent:
+      children:
+        b_k3s_agents:

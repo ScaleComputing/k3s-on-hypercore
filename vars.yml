@@ -1,0 +1,35 @@
+---
+# ----------------------------------------------------
+# VMs for K3s
+source_vm_name: ubuntu-22.04-server-cloudimg-amd64.img
+vm_group: b_k3s
+vcpu: 4
+memory: "{{ '2 GB' | human_to_bytes }}"
+disk_size: "{{ '20 GB' | human_to_bytes }}"
+vm_network_netmask: 255.255.255.0
+vm_network_gateway: 172.31.6.1
+vm_network_dns_nameservers:
+  - 8.8.8.8
+  - 1.1.1.1
+vm_ssh_authorized_keys:
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE8SNzKoqj89P6Z9kiYEhgbDogY0Y7YXSS68W2B5b2u7 justin_cinkelj@jcnuc
+vm_ssh_import_id: []
+
+server_ip_addresses:
+  - 172.31.6.30
+  - 172.31.6.31
+  - 172.31.6.32
+agent_ip_addresses:
+  - 172.31.6.40
+  - 172.31.6.41
+  - 172.31.6.42
+
+# ubuntu22.04 BIOS - ens3
+# ubuntu22.04 UEFI - enp1s0
+vm_network_iface: ens3
+vm_network_mode: static
+
+# ----------------------------------------------------
+# NFS server
+nfs_ip_address: 172.31.6.29
+nfs_data_dir: /nfsdata
