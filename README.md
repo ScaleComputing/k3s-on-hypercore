@@ -6,6 +6,8 @@ This can be used to:
 - setup K3s on ScaleComputing HyperCore using Ansible playbook
 - setup demo app on K3s
 
+## Prepare
+
 Steps:
 
 ```
@@ -30,15 +32,15 @@ nano vars.yml
 nano inventory/k3s.yml
 ```
 
-Create VMs on HyperCore
+## Create VMs on HyperCore
 
 ```
 ansible-playbook -e@vars.yml playbooks/hypercore_template_vm.yml
 ansible-playbook -i inventory -e@vars.yml playbooks/nfs-server.yml
-ansible-playbook -i inventory -e@vars.yml playbooks/k3s-cluster.yml
+ansible-playbook -i inventory -e@vars.yml playbooks/hypercore-cluster.yml
 ```
 
-Setup K3s
+## Setup K3s
 
 ```
 # ansible-playbook -i inventory -e@vars.yml k3s.orchestration.site
@@ -48,7 +50,8 @@ ansible-galaxy collection install k3s-ansible/
 ansible-playbook -i inventory -e@vars.yml k3s-ansible/playbook/site.yml -e token=mytoken
 
 ansible-playbook -i inventory -e@vars.yml playbooks/k3s-tools.yml
-ansible-playbook -i inventory -e@vars.yml playbooks/k3s-nfs.yml
+ansible-playbook -i inventory -e@vars.yml playbooks/k3s-nfs-utils.yml
+ansible-playbook -i inventory -e@vars.yml playbooks/k3s-nfs-provisioner.yml
 ansible-playbook -i inventory -e@vars.yml playbooks/k3s-dns.yml
 ansible-playbook -i inventory -e@vars.yml playbooks/k3s-metallb.yml
 ```
@@ -63,13 +66,28 @@ kubectl config use-context k3s-ansible
 kubectl config get-contexts
 ```
 
-Use K3s
+### Add new K3s nodes
+
+Add new K3s servers and/or agents to `vars.yml`, then apply needed changes.
+
+```
+kubectl get no
+nano vars.yml
+
+ansible-playbook -i inventory -e@vars.yml playbooks/hypercore-cluster.yml
+ansible-playbook -i inventory -e@vars.yml playbooks/k3s-nfs-utils.yml
+ansible-playbook -i inventory -e@vars.yml k3s-ansible/playbook/site.yml -e token=mytoken
+
+k get no
+```
+
+## Use K3s
 
 ```
 # k == kubectl
 k apply -f kube/webapp.yml
 # ask exdns-k8s-gateway for IP of the just-deployed webapp demo
-get svc -A -l app.kubernetes.io/instance=exdns  # 172.31.6.51 was returned
+k get svc -A -l app.kubernetes.io/instance=exdns  # 172.31.6.51 was returned
 dig nfs.demo1.xyz.si @172.31.6.51
 ```
 
