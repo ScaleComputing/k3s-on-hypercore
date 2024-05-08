@@ -14,13 +14,7 @@ Steps:
 python3 -m venv .venv  # python>=3.12 prefered
 source .venv/bin/activate
 pip install -r requirements.txt
-## ansible-galaxy install -r requirements.yml
-```
-
-```
-TEMP
-(cd ../ansible_collections/scale_computing/hypercore/; ansible-galaxy collection build -f;)
-## ansible-galaxy collection install ../ansible_collections/scale_computing/hypercore/scale_computing-hypercore-1.5.0-dev.tar.gz
+ansible-galaxy install -r requirements.yml
 ```
 
 Decide on prefix to your VM names
@@ -93,31 +87,34 @@ ansible-playbook -i inventory -e@vars.yml k3s-ansible/playbook/upgrade.yml -e to
 
 ## Use K3s
 
+### Single pod webapp with external volume
+
 ```
 kubectl apply -f kube/webapp.yml
 # ask exdns-k8s-gateway for IP of the just-deployed webapp demo
+kubectl get svc -n default -l run=web-nfs  # EXTERNAL-IP=172.31.6.52 was returned
+```
+
+Visit http://EXTERNAL_IP:8080/ URL.
+The pod is showing its filesystem.
+
+The web-nfs service also has a DNS name assigned.
+We can ask the exdns about this.
+
+```
 kubectl get svc -A -l app.kubernetes.io/instance=exdns  # 172.31.6.51 was returned
 dig nfs.demo1.example.com @172.31.6.51
 ```
 
-```
-# to setup "split DNS" on local PC
-sudo nano /etc/systemd/resolved.conf
-  [Resolve]
-  DNS=172.31.6.51
-  Domains=~xyz.si
-
-sudo systemctl daemon-reload
-sudo systemctl restart systemd-resolved
-dig nfs.demo1.xyz.si
-```
-
-Open http://nfs.demo1.xyz.si:8080/ URL.
+If 172.31.6.51 would be configured as DNS resolver, then we could open
+http://nfs.demo1.xyz.si:8080/ URL.
 
 ```
 # Add a test file directly on NFS server
 root@b-k3s-nfs-server:~# date >> /nfsdata/nfs-retain/default-nfs-web-pvc/aa.txt
 ```
+
+### Multi pod app
 
 Try a more complex app, say https://github.com/GoogleCloudPlatform/microservices-demo
 
