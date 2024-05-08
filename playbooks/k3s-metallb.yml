@@ -23,7 +23,15 @@
         release_namespace: metallb-system
         create_namespace: true
 
+    - name: Wait for MetalLB to be up before adding pool
+      ansible.builtin.pause:
+        seconds: 10
+
     - name: Configure MetalLB IP pool
       kubernetes.core.k8s:
         template: metallb-pool.yml.j2
         state: present
+      # register: metallb_pool_result
+      # until: metallb_pool_result is succeeded
+      delay: 10
+      retries: 10
