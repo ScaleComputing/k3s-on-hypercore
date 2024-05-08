@@ -1,0 +1,11 @@
+---
+- ansible.builtin.import_playbook: hypercore_template_vm.yml
+- ansible.builtin.import_playbook: nfs-server.yml
+- ansible.builtin.import_playbook: hypercore-cluster.yml
+# ansible.builtin.import_playbook: k3s.orchestration.site
+- ansible.builtin.import_playbook: ../k3s-ansible/playbook/site.yml
+- ansible.builtin.import_playbook: k3s-tools.yml
+- ansible.builtin.import_playbook: k3s-nfs-utils.yml
+- ansible.builtin.import_playbook: k3s-nfs-provisioner.yml
+- ansible.builtin.import_playbook: k3s-dns.yml
+- ansible.builtin.import_playbook: k3s-metallb.yml

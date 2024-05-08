@@ -15,9 +15,22 @@ python3 -m venv .venv  # python>=3.12 prefered
 source .venv/bin/activate
 pip install -r requirements.txt
 ansible-galaxy install -r requirements.yml
+
+# We need to clone k3s-ansible until their packaging get fixed.
+# See https://github.com/k3s-io/k3s-ansible/issues/321
+git clone https://github.com/k3s-io/k3s-ansible
+ansible-galaxy collection install k3s-ansible/
 ```
 
-Decide on prefix to your VM names
+Setup access to HyperCore cluster:
+
+```
+export SC_HOST=https://IP
+export SC_USERNAME=admin_user
+export SC_PASSWORD=admin_pass
+```
+
+Decide on prefix to your VM names, IP addresses etc.
 ```
 # set vm_group variable
 nano vars.yml
@@ -26,7 +39,20 @@ nano vars.yml
 nano inventory/k3s.yml
 ```
 
-## Create VMs on HyperCore
+## Setup K3s - one command
+
+Now a K3s cluster can be setup with a single command:
+
+```
+ansible-playbook -i inventory -e@vars.yml playbooks/all.yml -e token=mytoken
+```
+
+## Setup K3s - multiple command
+
+Alternative to single command is to run individual steps one by one.
+This allows debugging, and makes retrying a failed step easier.
+
+### Create VMs on HyperCore
 
 ```
 ansible-playbook -e@vars.yml playbooks/hypercore_template_vm.yml
@@ -34,13 +60,10 @@ ansible-playbook -i inventory -e@vars.yml playbooks/nfs-server.yml
 ansible-playbook -i inventory -e@vars.yml playbooks/hypercore-cluster.yml
 ```
 
-## Setup K3s
+### Setup K3s
 
 ```
 # ansible-playbook -i inventory -e@vars.yml k3s.orchestration.site
-
-git clone https://github.com/k3s-io/k3s-ansible
-ansible-galaxy collection install k3s-ansible/
 ansible-playbook -i inventory -e@vars.yml k3s-ansible/playbook/site.yml -e token=mytoken
 
 ansible-playbook -i inventory -e@vars.yml playbooks/k3s-tools.yml
@@ -50,7 +73,9 @@ ansible-playbook -i inventory -e@vars.yml playbooks/k3s-dns.yml
 ansible-playbook -i inventory -e@vars.yml playbooks/k3s-metallb.yml
 ```
 
-Use this K3S cluster
+## Use this K3S cluster
+
+Configure `kubectl` on your laptop/workstation to use this cluster.
 
 ```
 ls $HOME/.kube
@@ -60,7 +85,7 @@ kubectl config use-context k3s-ansible
 kubectl config get-contexts
 ```
 
-### Add new K3s nodes
+## Add new K3s nodes
 
 Add new K3s servers and/or agents to `vars.yml`, then apply needed changes.
 
@@ -75,7 +100,7 @@ ansible-playbook -i inventory -e@vars.yml k3s-ansible/playbook/site.yml -e token
 kubectl get no
 ```
 
-### Upgrade K3s
+## Upgrade K3s
 
 Read release notes (https://docs.k3s.io/release-notes/v1.29.X).
 
