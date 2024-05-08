@@ -78,7 +78,7 @@ ansible-playbook -i inventory -e@vars.yml playbooks/hypercore-cluster.yml
 ansible-playbook -i inventory -e@vars.yml playbooks/k3s-nfs-utils.yml
 ansible-playbook -i inventory -e@vars.yml k3s-ansible/playbook/site.yml -e token=mytoken
 
-k get no
+kubectl get no
 ```
 
 ### Upgrade K3s
@@ -94,10 +94,9 @@ ansible-playbook -i inventory -e@vars.yml k3s-ansible/playbook/upgrade.yml -e to
 ## Use K3s
 
 ```
-# k == kubectl
-k apply -f kube/webapp.yml
+kubectl apply -f kube/webapp.yml
 # ask exdns-k8s-gateway for IP of the just-deployed webapp demo
-k get svc -A -l app.kubernetes.io/instance=exdns  # 172.31.6.51 was returned
+kubectl get svc -A -l app.kubernetes.io/instance=exdns  # 172.31.6.51 was returned
 dig nfs.demo1.xyz.si @172.31.6.51
 ```
 
@@ -127,7 +126,7 @@ cd kube
 git clone https://github.com/GoogleCloudPlatform/microservices-demo
 cd microservices-demo
 
-k create ns demo2
+kubectl create ns demo2
 kubectl config set-context --current --namespace=demo2
 kubectl apply -f ./release/kubernetes-manifests.yaml
 kubectl get po
