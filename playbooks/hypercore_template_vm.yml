@@ -4,11 +4,13 @@
   connection: local
   gather_facts: false
   vars:
-    image_url: https://cloud-images.ubuntu.com/releases/22.04/release-20240416/ubuntu-22.04-server-cloudimg-amd64.img
+    source_image_url: https://cloud-images.ubuntu.com/releases/22.04/release-20240416/ubuntu-22.04-server-cloudimg-amd64.img
+    source_vm_name: "{{ source_image_url | split('/') | last }}"
+    source_machine_type: BIOS
 
   roles:
     - name: scale_computing.hypercore.url2template
-      url2template_image_url: "{{ image_url }}"
-      url2template_vm_name: "{{ vm_name | default(image_url | split('/') | last) }}"
-      url2template_machine_type: "{{ machine_type }}"
+      url2template_image_url: "{{ source_image_url }}"
+      url2template_vm_name: "{{ source_vm_name }}"
+      url2template_machine_type: "{{ source_machine_type }}"
       url2template_operating_system: os_other

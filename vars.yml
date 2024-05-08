@@ -1,8 +1,10 @@
 ---
 # ----------------------------------------------------
 # VMs for K3s
-source_vm_name: ubuntu-22.04-server-cloudimg-amd64.img
 vm_group: b_k3s
+source_image_url: https://cloud-images.ubuntu.com/releases/22.04/release-20240416/ubuntu-22.04-server-cloudimg-amd64.img
+source_vm_name: ubuntu-22.04-server-cloudimg-amd64.img
+source_machine_type: BIOS
 vcpu: 4
 memory: "{{ '2 GB' | human_to_bytes }}"
 disk_size: "{{ '20 GB' | human_to_bytes }}"
