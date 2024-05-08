@@ -35,14 +35,14 @@ runcmd:
   - [ sh, -c, 'sudo update-grub' ]
   - [ echo, message, CC-runcmd-jc ]
 # bootcmd runs on every boot
-bootcmd:
+# bootcmd:
 # qemu-guest-agent is not yet installed - packages are installed later
 # network is not yet up
-  - apt update
-  - DEBIAN_FRONTEND=noninteractive apt install -y qemu-guest-agent
-  - [ systemctl, restart, --no-block, qemu-guest-agent ]
+#  - apt update
+#  - DEBIAN_FRONTEND=noninteractive apt install -y qemu-guest-agent
+#  - [ systemctl, restart, --no-block, qemu-guest-agent ]
 # scripts_user:
-write_files: []
+# write_files: []
 final_message: |
   cloud-init has finished
   version: $version

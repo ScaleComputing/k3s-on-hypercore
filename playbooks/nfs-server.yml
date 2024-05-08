@@ -43,6 +43,16 @@
 
 - name: Setup NFS server
   hosts: "{{ vm_group }}_nfs_servers"
+  pre_tasks:
+    - name: wait on cloudinit to finish
+      ansible.builtin.command: cloud-init status --wait
+      async: 600
+      poll: 10
+      # "journalctl -u cloud-init-local.service" and "cloud-init schema --system"
+      # tell us about "'_orig_eni_name' was unexpected" in
+      # /var/lib/cloud/instance/network-config.json
+      # Ignore this.
+      ignore_errors: true
   roles:
     - { role: geerlingguy.nfs }
   vars:

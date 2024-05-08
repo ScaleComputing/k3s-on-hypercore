@@ -73,3 +73,13 @@
         name: scale_computing.hypercore.template2vm
         tasks_from: wait_vm_boot_tasks.yml
       loop: "{{ range(10) }}"
+
+    - name: wait on cloudinit to finish
+      ansible.builtin.command: cloud-init status --wait
+      async: 600
+      poll: 10
+      # "journalctl -u cloud-init-local.service" and "cloud-init schema --system"
+      # tell us about "'_orig_eni_name' was unexpected" in
+      # /var/lib/cloud/instance/network-config.json
+      # Ignore this.
+      ignore_errors: true
