@@ -41,6 +41,11 @@ nfs_ip_address: 172.31.6.29
 nfs_data_dir: /nfsdata
 
 # ----------------------------------------------------
+# Optional K3s components
+k3s_external_dns_enabled: true
+k3s_external_dns_domain: example.com
+
+# ----------------------------------------------------
 # vars mandatory for k3s.orchestration.site
 # ansible_port: 22
 # ansible_user: debian

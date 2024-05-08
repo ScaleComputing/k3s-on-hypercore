@@ -9,25 +9,28 @@
   hosts: "{{ hostvars[groups['server'][0]]['inventory_hostname'] }}"
   gather_facts: false
   tasks:
-    - name: Add k8s_gateway chart repo
-      kubernetes.core.helm_repository:
-        name: k8s_gateway
-        repo_url: https://ori-edge.github.io/k8s_gateway/
+    - name: Install external DNS service if enabled
+      when: k3s_external_dns_enabled
+      block:
+        - name: Add k8s_gateway chart repo
+          kubernetes.core.helm_repository:
+            name: k8s_gateway
+            repo_url: https://ori-edge.github.io/k8s_gateway/
 
-    # Observer behavior is similar to https://github.com/k3s-io/k3s/issues/4188#issuecomment-955767252
-    # Problem is that container image download fails, and DNS resolution does auto-fix.
-    # If needed, backup /etc/resolve.conf, add extra reslover, then restore /etc/resolve.conf (symlink)
-    # Or, download quay.io/oriedge/k8s_gateway:v0.4.0 early
-    - name: Download k8s_gateway image early
-      ansible.builtin.command:
-        cmd: crictl pull quay.io/oriedge/k8s_gateway:v0.4.0
+        # Observer behavior is similar to https://github.com/k3s-io/k3s/issues/4188#issuecomment-955767252
+        # Problem is that container image download fails, and DNS resolution does auto-fix.
+        # If needed, backup /etc/resolve.conf, add extra reslover, then restore /etc/resolve.conf (symlink)
+        # Or, download quay.io/oriedge/k8s_gateway:v0.4.0 early
+        - name: Download k8s_gateway image early
+          ansible.builtin.command:
+            cmd: crictl pull quay.io/oriedge/k8s_gateway:v0.4.0
 
-    - name: Install k8s_gateway for DNS domain xyz.si
-      kubernetes.core.helm:
-        name: exdns
-        chart_ref: k8s_gateway/k8s-gateway
-        chart_version: 2.4.0
-        release_namespace: kube-system
-        set_values:
-          - value: domain=xyz.si
-            value_type: string
+        - name: Install k8s_gateway for DNS domain {{ k3s_external_dns_domain }}
+          kubernetes.core.helm:
+            name: exdns
+            chart_ref: k8s_gateway/k8s-gateway
+            chart_version: 2.4.0
+            release_namespace: kube-system
+            set_values:
+              - value: domain={{ k3s_external_dns_domain }}
+                value_type: string

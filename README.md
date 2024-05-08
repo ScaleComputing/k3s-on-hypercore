@@ -97,7 +97,7 @@ ansible-playbook -i inventory -e@vars.yml k3s-ansible/playbook/upgrade.yml -e to
 kubectl apply -f kube/webapp.yml
 # ask exdns-k8s-gateway for IP of the just-deployed webapp demo
 kubectl get svc -A -l app.kubernetes.io/instance=exdns  # 172.31.6.51 was returned
-dig nfs.demo1.xyz.si @172.31.6.51
+dig nfs.demo1.example.com @172.31.6.51
 ```
 
 ```
