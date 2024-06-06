@@ -64,7 +64,7 @@ ansible-playbook -i inventory -e@vars.yml playbooks/hypercore-cluster.yml
 
 ```
 # ansible-playbook -i inventory -e@vars.yml k3s.orchestration.site
-ansible-playbook -i inventory -e@vars.yml k3s-ansible/playbook/site.yml -e token=mytoken
+ansible-playbook -i inventory -e@vars.yml k3s-ansible/playbooks/site.yml -e token=mytoken
 
 ansible-playbook -i inventory -e@vars.yml playbooks/k3s-tools.yml
 ansible-playbook -i inventory -e@vars.yml playbooks/k3s-nfs-utils.yml
@@ -95,7 +95,7 @@ nano vars.yml
 
 ansible-playbook -i inventory -e@vars.yml playbooks/hypercore-cluster.yml
 ansible-playbook -i inventory -e@vars.yml playbooks/k3s-nfs-utils.yml
-ansible-playbook -i inventory -e@vars.yml k3s-ansible/playbook/site.yml -e token=mytoken
+ansible-playbook -i inventory -e@vars.yml k3s-ansible/playbooks/site.yml -e token=mytoken
 
 kubectl get no
 ```
@@ -107,7 +107,7 @@ Read release notes (https://docs.k3s.io/release-notes/v1.29.X).
 In `vars.yml` change `k3s_version` to more recent version, then run:
 
 ```
-ansible-playbook -i inventory -e@vars.yml k3s-ansible/playbook/upgrade.yml -e token=mytoken
+ansible-playbook -i inventory -e@vars.yml k3s-ansible/playbooks/upgrade.yml -e token=mytoken
 ```
 
 ## Use K3s
