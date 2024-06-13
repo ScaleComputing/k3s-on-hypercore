@@ -2,7 +2,7 @@ collections:
   - name: community.general
     version: 8.6.0
   - name: scale_computing.hypercore
-    version: 1.5.0  # url2template role is needed
+    version: 1.5.0
   - name: kubernetes.core
     version: 3.0.1
 roles:
