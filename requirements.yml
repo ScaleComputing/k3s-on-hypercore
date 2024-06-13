@@ -5,6 +5,10 @@ collections:
     version: 1.5.0
   - name: kubernetes.core
     version: 3.0.1
+  - name: https://github.com/k3s-io/k3s-ansible.git
+    type: git
+    version: master
+    # version: 1907e6fb79fedcc38fe3be88b933b1643a9c9716  # commit we tested with
 roles:
   - name: geerlingguy.nfs
     version: 2.0.0
