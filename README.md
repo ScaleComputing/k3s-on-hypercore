@@ -15,11 +15,6 @@ python3 -m venv .venv  # python>=3.12 prefered
 source .venv/bin/activate
 pip install -r requirements.txt
 ansible-galaxy install -r requirements.yml
-
-# We need to clone k3s-ansible until their packaging get fixed.
-# See https://github.com/k3s-io/k3s-ansible/issues/321
-git clone https://github.com/k3s-io/k3s-ansible
-ansible-galaxy collection install k3s-ansible/
 ```
 
 Setup access to HyperCore cluster:
@@ -63,8 +58,7 @@ ansible-playbook -i inventory -e@vars.yml playbooks/hypercore-cluster.yml
 ### Setup K3s
 
 ```
-# ansible-playbook -i inventory -e@vars.yml k3s.orchestration.site
-ansible-playbook -i inventory -e@vars.yml k3s-ansible/playbook/site.yml -e token=mytoken
+ansible-playbook -i inventory -e@vars.yml k3s.orchestration.site -e token=mytoken
 
 ansible-playbook -i inventory -e@vars.yml playbooks/k3s-tools.yml
 ansible-playbook -i inventory -e@vars.yml playbooks/k3s-nfs-utils.yml
@@ -95,7 +89,7 @@ nano vars.yml
 
 ansible-playbook -i inventory -e@vars.yml playbooks/hypercore-cluster.yml
 ansible-playbook -i inventory -e@vars.yml playbooks/k3s-nfs-utils.yml
-ansible-playbook -i inventory -e@vars.yml k3s-ansible/playbook/site.yml -e token=mytoken
+ansible-playbook -i inventory -e@vars.yml k3s.orchestration.site -e token=mytoken
 
 kubectl get no
 ```
@@ -107,7 +101,7 @@ Read release notes (https://docs.k3s.io/release-notes/v1.29.X).
 In `vars.yml` change `k3s_version` to more recent version, then run:
 
 ```
-ansible-playbook -i inventory -e@vars.yml k3s-ansible/playbook/upgrade.yml -e token=mytoken
+ansible-playbook -i inventory -e@vars.yml k3s.orchestration.upgrade -e token=mytoken
 ```
 
 ## Use K3s
