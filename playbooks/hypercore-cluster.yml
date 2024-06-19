@@ -17,6 +17,7 @@
           - ansible_group__{{ vm_group }}
           - ansible_group__{{ vm_group }}_servers
           - ansible_host__{{ vm_network_ip_address }}
+          - ansible_user__ubuntu
           # - SERIAL
         template2vm_vcpu: "{{ vcpu }}"
         template2vm_memory: "{{ memory }}"
@@ -46,6 +47,7 @@
           - ansible_group__{{ vm_group }}
           - ansible_group__{{ vm_group }}_agents
           - ansible_host__{{ vm_network_ip_address }}
+          - ansible_user__ubuntu
           # - SERIAL
         template2vm_vcpu: "{{ vcpu }}"
         template2vm_memory: "{{ memory }}"
