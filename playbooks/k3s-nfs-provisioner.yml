@@ -1,4 +1,8 @@
 ---
+- name: Dummy play to load hostvars
+  hosts: localhost
+  tasks: []
+
 - name: Install nfs-subdir-external-provisioner
   hosts: "{{ hostvars[groups['server'][0]]['inventory_hostname'] }}"
   gather_facts: false
