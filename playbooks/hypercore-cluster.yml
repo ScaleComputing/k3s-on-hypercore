@@ -85,3 +85,4 @@
       # /var/lib/cloud/instance/network-config.json
       # Ignore this.
       ignore_errors: true
+      changed_when: false
