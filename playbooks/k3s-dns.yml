@@ -24,6 +24,7 @@
         - name: Download k8s_gateway image early
           ansible.builtin.command:
             cmd: crictl pull quay.io/oriedge/k8s_gateway:v0.4.0
+          become: true
 
         - name: Install k8s_gateway for DNS domain {{ k3s_external_dns_domain }}
           kubernetes.core.helm:

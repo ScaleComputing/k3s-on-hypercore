@@ -17,6 +17,7 @@
           - ansible_group__{{ vm_group }}
           - ansible_group__{{ vm_group }}_nfs_servers
           - ansible_host__{{ nfs_ip_address }}
+          - ansible_user__ubuntu
           # - SERIAL
         template2vm_vcpu: "{{ vcpu }}"
         template2vm_memory: "{{ memory }}"
@@ -53,8 +54,10 @@
       # /var/lib/cloud/instance/network-config.json
       # Ignore this.
       ignore_errors: true
+      changed_when: false
   roles:
-    - { role: geerlingguy.nfs }
+    - role: geerlingguy.nfs
+      become: true
   vars:
     nfs_exports:
       - "{{ nfs_data_dir }}/nfs-client    *(rw,sync,no_root_squash)"
