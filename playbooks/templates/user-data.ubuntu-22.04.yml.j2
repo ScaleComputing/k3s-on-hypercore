@@ -22,18 +22,59 @@ manage_etc_hosts: localhost
 ssh_authorized_keys: {{ vm_ssh_authorized_keys }}
 disable_root: false
 ssh_import_id: {{ vm_ssh_import_id }}
-package_update: true
+# we cannot use "apt install" or "apt update",
+# the network is not up yet (we need to rename iface first)
+package_update: false
 package_upgrade: false
-packages:
- - qemu-guest-agent
+# packages:
+#  - qemu-guest-agent
 package_reboot_if_required: true
 # runcmd runs only on first boot
 runcmd:
-  - [ sh, -c, 'sudo echo GRUB_CMDLINE_LINUX="nomodeset" >> /etc/default/grub' ]
-  - [ sh, -c, 'sudo echo GRUB_GFXPAYLOAD_LINUX="1024x768" >> /etc/default/grub' ]
-  - [ sh, -c, 'sudo echo GRUB_DISABLE_LINUX_UUID=true >> /etc/default/grub' ]
-  - [ sh, -c, 'sudo update-grub' ]
-  - [ echo, message, CC-runcmd-jc ]
+  - echo 'GRUB_CMDLINE_LINUX="nomodeset"' >> /etc/default/grub
+  - echo 'GRUB_GFXPAYLOAD_LINUX="1024x768"' >> /etc/default/grub
+  - echo 'GRUB_DISABLE_LINUX_UUID=true' >> /etc/default/grub
+  - echo 'GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX net.ifnames=0 biosdevname=0"' >> /etc/default/grub
+  - update-grub
+
+  - |
+    echo DBG before iface-rename;
+    ip link;
+    ip addr;
+  # rename network interface
+  # cloud-init will create /etc/netplan/50-*.cfg file, just apply it.
+  - |
+    IFACE=$(ip link | grep '^2\: ' | awk '{print $2}' | sed 's/\://');
+    echo IFACE=$IFACE;
+    ip link set dev $IFACE down;
+    ip link set dev $IFACE name eth0;
+    ip link set dev eth0 up;
+    netplan apply;
+  - |
+    echo DBG after iface-rename;
+    ip link;
+    ip addr;
+
+  # pain, apt-get update seems to be run at wrong time,
+  # and it does not know about qemu-guest-agent package.
+  - |
+    for ii in $(seq 100)
+    do
+      if (apt-cache pkgnames | grep '^qemu-guest-agent$')
+      then
+        echo OK apt-cache knows about qemu-guest-agent
+        break
+      else
+        echo Waiting on apt-cache and qemu-guest-agent
+        sleep 1
+        # this is what cloud-init runs
+        eatmydata apt-get --option=Dpkg::Options::=--force-confold --option=Dpkg::options::=--force-unsafe-io --assume-yes --quiet update
+      fi
+    done
+  - DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends qemu-guest-agent
+
+  - echo message CC-runcmd-jc
+
 # bootcmd runs on every boot
 # bootcmd:
 # qemu-guest-agent is not yet installed - packages are installed later

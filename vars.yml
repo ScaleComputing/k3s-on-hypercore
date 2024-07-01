@@ -32,9 +32,6 @@ load_balancer_addresses:
   - 172.31.6.50-172.31.6.58
   - 172.31.6.59/32
 
-# ubuntu22.04 BIOS - ens3
-# ubuntu22.04 UEFI - enp1s0
-vm_network_iface: ens3
 vm_network_mode: static
 
 # ----------------------------------------------------
