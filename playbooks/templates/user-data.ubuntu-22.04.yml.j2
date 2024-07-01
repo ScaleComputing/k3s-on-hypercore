@@ -12,9 +12,9 @@ Content-Disposition: attachment; filename="cloud-config.txt"
 # Tested with Ubuntu 22.04 cloud image.
 
 # TEMP only for debugging
-# password: "password"
-# chpasswd: { expire: False }
-# ssh_pwauth: True
+password: "password"
+chpasswd: { expire: False }
+ssh_pwauth: True
 
 hostname: {{ vm_name | replace("_", "-") }}
 # fqdn: {{ vm_name | replace("_", "-") }}.example.com
