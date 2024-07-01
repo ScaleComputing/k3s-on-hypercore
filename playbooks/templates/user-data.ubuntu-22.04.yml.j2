@@ -29,11 +29,17 @@ packages:
 package_reboot_if_required: true
 # runcmd runs only on first boot
 runcmd:
-  - [ sh, -c, 'sudo echo GRUB_CMDLINE_LINUX="nomodeset" >> /etc/default/grub' ]
-  - [ sh, -c, 'sudo echo GRUB_GFXPAYLOAD_LINUX="1024x768" >> /etc/default/grub' ]
-  - [ sh, -c, 'sudo echo GRUB_DISABLE_LINUX_UUID=true >> /etc/default/grub' ]
-  - [ sh, -c, 'sudo update-grub' ]
-  - [ echo, message, CC-runcmd-jc ]
+  - echo 'GRUB_CMDLINE_LINUX="nomodeset"' >> /etc/default/grub
+  - echo 'GRUB_GFXPAYLOAD_LINUX="1024x768"' >> /etc/default/grub
+  - echo 'GRUB_DISABLE_LINUX_UUID=true' >> /etc/default/grub
+  - echo 'GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX net.ifnames=0 biosdevname=0"' >> /etc/default/grub
+  - update-grub
+
+  - reboot
+  # or if-rename
+
+  - echo message CC-runcmd-jc
+
 # bootcmd runs on every boot
 # bootcmd:
 # qemu-guest-agent is not yet installed - packages are installed later
