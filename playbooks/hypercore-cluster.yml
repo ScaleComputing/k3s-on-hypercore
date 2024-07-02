@@ -27,7 +27,6 @@
         template2vm_user_data: "{{ lookup('template', 'user-data.ubuntu-22.04.yml.j2') }}"
         template2vm_meta_data: "{{ lookup('template', 'meta-data.ubuntu-22.04.yml.j2') }}"
         vm_name: "{{ template2vm_vm_name }}"
-        vm_network_iface: enp1s0
         vm_network_mode: static
         vm_network_ip_address: "{{ vm_ip_address }}"
       loop: "{{ server_ip_addresses }}"
